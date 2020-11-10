@@ -1,0 +1,14 @@
+body {
+    padding: 50px;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    color: #00B700;
+}
+body2{
+    padding: 50px;
+    font: 20px "Lucida Bright", HancomEQN;
+    color: red;
+
+}
+a {
+    color: #00B700;
+}
