@@ -18,6 +18,8 @@
 .nfs*
 
 ### Node ###
+google.json
+.idea
 # Logs
 logs
 *.log
