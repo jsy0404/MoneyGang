@@ -1,0 +1,8 @@
+#!/bin/bash
+
+sudo apt update
+sudo apt install nodejs
+sudo apt install npm
+sudo apt install build-essential
+sudo apt install python3
+sudo python3 ./algorithm/setup.py install
