@@ -160,7 +160,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
+algorithm/host.txt
+algorithm/test.py
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -293,5 +294,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-
+*.txt
+*.sh
 # End of https://www.toptal.com/developers/gitignore/api/node,python,linux,windows
