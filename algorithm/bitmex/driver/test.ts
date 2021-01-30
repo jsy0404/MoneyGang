@@ -1,4 +1,4 @@
-import {CallbackDriver} from "./CallbackDriver";
+import {BitmexDriver} from "./BitmexDriver";
 import * as express from "express";
 
 const app: express.Application = express();
@@ -11,4 +11,4 @@ app.get("/", (req: express.Request, res: express.Response) => {
 
 app.listen(PORT, () => {
 });
-const test = new CallbackDriver();
+const test = new BitmexDriver();

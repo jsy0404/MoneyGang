@@ -4,7 +4,6 @@ class PrintDriver{
 
 
 	printOrderBook(book: any, price: number, value: number): void{
-		//console.clear();
 		book.forEach((elem) => {
 			let color: String;
 			let msg: String;
@@ -12,7 +11,7 @@ class PrintDriver{
 			
 			msg = this.formatting(elem, value, tradePrice);
 			color = this.getColor(tradePrice);
-			
+
 			//console.log(color, msg, this.background);
 		});
 	}
