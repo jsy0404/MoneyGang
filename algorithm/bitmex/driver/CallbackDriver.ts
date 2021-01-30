@@ -3,28 +3,32 @@ import { PrintDriver }  from "./PrintDriver";
 
 export
 class CallbackDriver{
-	myDriver: BitmexDriver;
-	printDriver: PrintDriver;
-	lastPrice: number;
-	lastValue: number;
-	orderBook: Map<String, number>;
-	quoteBook: Map<String, Array<number>>;	
-	quoteAmountAvg: number;
+	lastPrice:						number;
+	lastValue:						number;
+	quoteAmountAvg:					number;
+	traceQuoteThreshold:			number;
+	emergenceQuoteThreshold:		number;
+	printDriver:			   PrintDriver;
+	quoteList:		   Map<number, number>;
+	orderBook:		   Map<number, number>;
+	quoteBook:  Map<number, Array<number>>;
 
 	constructor(){
-		this.myDriver = new BitmexDriver(this);
-		this.printDriver = new PrintDriver();
 		this.lastPrice = 0;
 		this.lastValue = 0;
-		this.quoteAmountAvg = 40;
-		this.orderBook = new Map<String, number>();
-		this.quoteBook = new Map<String, Array<number>>();
+		this.quoteAmountAvg = 4;
+		this.traceQuoteThreshold = 100000;
+		this.emergenceQuoteThreshold = 10000000;
+		this.quoteList   = new Map<number, number>();
+		this.printDriver = new PrintDriver();
+		this.orderBook   = new Map<number, number>();
+		this.quoteBook   = new Map<number, Array<number>>();
 	}
 
 
 	tradeInfo(data: Map<String, number>): void {
-		this.lastPrice = data.get("price")!;
-		this.lastValue = data.get("size")!;
+		this.lastPrice = data["price"];
+		this.lastValue = data["size"];
 	}
 
 
@@ -35,31 +39,32 @@ class CallbackDriver{
 		data.forEach((row) => {
 			price = row["price"];
 			size = row["size"];
-			if (price in this.orderBook) {
-				quote = this.orderBook.get(String(price))! - size;
-			} else {
-				quote = size;
+			if (this.orderBook.has(price)) {
+				quote = Math.abs(this.orderBook.get(price)! - size);
+				if (quote > this.traceQuoteThreshold) {
+					this.addQuote(price, quote);
+				}
 			}
-			this.orderBook.set(String(price), size);
-			if (quote > 1000) {
-				this.addQuote(price, quote);
-			}
+			this.orderBook.set(price, size);
 		});
-		//let sorted: number[][] = this.sortDictByKey(this.orderBook);
-
-		//this.printDriver.printOrderBook(sorted, this.lastPrice, this.lastValue);
+		//console.clear();
+		//this.printDriver.printOrderBook(this.sortDictByKey(this.orderBook), this.lastPrice, this.lastValue);
 	}
 
 
 	addQuote(price: number, quote: number): void{
-		if (price in this.quoteBook) {
-			this.quoteBook.get(String(price))!.push(quote);
+		if (this.quoteList.has(price)) {
+			if (!this.quoteBook.has(price)){
+				this.quoteBook.set(price, new Array<number>());
+			}
+			this.quoteBook.get(price)!.push(quote);
 		} else {
-			this.quoteBook.set(String(price), [quote]);
+			this.quoteList.set(price, 1);
 		}
-		if (Object.keys(this.quoteBook).length >40){
+		if (this.quoteBook.size >40){
 			this.resetQuoteBook();
 		}
+		//console.clear();
 		//this.printDriver.printOrderBook(this.sortDictByKey(this.quoteBook), price, quote);
 	}
 
@@ -75,7 +80,8 @@ class CallbackDriver{
 				rowLength = elem[1].length;
 				avg += rowLength;
 				if (rowLength > this.quoteAmountAvg && this.quoteAmountAvg > 4){
-					this.quoteBook.delete(String(elem[0]));
+					this.quoteBook.delete(parseFloat(elem[0]));
+					this.quoteList.delete(parseFloat(elem[0]));
 					return;
 				}
 				if (rowLength < min){
@@ -85,19 +91,16 @@ class CallbackDriver{
 			});
 
 			this.quoteAmountAvg = (avg/sorted.length);
-			if (Math.max(...this.quoteBook.get(String(key))!) < 1000000){
-				this.quoteBook.delete(String(key));
+			if (Math.max(...this.quoteBook.get(parseFloat(key))!) < this.emergenceQuoteThreshold){
+				this.quoteBook.delete(parseFloat(key));
+				this.quoteList.delete(parseFloat(key));
 			}
 		}
-
 	}
 
 
-	sortDictByKey(data: Map<String, any>): any{
-		let sorted: any = Object.keys(data).map(function(key) {
-			return [key, data.get(String(key))];
-		});
-
+	sortDictByKey(data: Map<number, any>): any{
+		let sorted: any = Array.from(data.keys()).map((key) => [key, data.get(key)]);
 		sorted.sort(function(first: Array<any>, second: Array<any>) {
 			return second[0] - first[0];
 		});

@@ -4,17 +4,19 @@ import  * as fs from "fs";
 
 export
 class BitmexDriver{
-	BitmexClient: typeof BitMEXClient;
+	bitmexClient: BitMEXClient;
+	callbackDriver: CallbackDriver;
 	lastQuoteTS: String = null;
 
-	constructor(callbackDriver: CallbackDriver){
+	constructor(){
 		const key = this.getKey();
-		this.BitmexClient = new BitMEXClient({apiKeyID: key});
-		this.BitmexClient.addStream("XBTUSD", "trade", (data: []) => {
-			callbackDriver.tradeInfo(data[data.length-1]);
+		this.callbackDriver = new CallbackDriver();
+		this.bitmexClient = new BitMEXClient({apiKeyID: key});
+		this.bitmexClient.addStream("XBTUSD", "trade", (data: []) => {
+			this.callbackDriver.tradeInfo(data[data.length-1]);
 		});
-		this.BitmexClient.addStream("XBTUSD", "orderBookL2_25", (data: []) => {
-			callbackDriver.orderBookInfo(data);
+		this.bitmexClient.addStream("XBTUSD", "orderBookL2_25", (data: []) => {
+			this.callbackDriver.orderBookInfo(data);
 		});
 	}
 
