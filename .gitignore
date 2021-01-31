@@ -22,6 +22,8 @@ BackEnd/package.json
 BackEnd/package-lock.json
 BackEnd/config설명.txt
 BackEnd/configuration.json
+
+
 # Logs
 logs
 *.log
