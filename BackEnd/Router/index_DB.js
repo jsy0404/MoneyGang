@@ -7,12 +7,14 @@ const db            = dbcrud();
 const routes        = express.Router;
 const router        = routes();
 
-/*
- * localhost:3000/DB/read1
- * find all
- * get test
- */
-router.get("/read1", async (req, res) => {
+let preprice        = null;
+let presecond       = null;
+let preminute       = null;
+
+router.post("/read1", async (req, res) => {
+    let oValue = null, cValue = null;
+
+    /*
     const promise = db.findall();
     let result = [];
     promise.then((promisevalue) => {
@@ -26,13 +28,14 @@ router.get("/read1", async (req, res) => {
         });
         res.json(result);
     });
+    */
 });
 
 /*
  * localhost:3000/DB/read2/Name
  * find with Name
  * get test
- */
+ 
 router.get("/read2/:Name", async (req, res) => {
     const promise = db.findbyname(req.params.Name);
     let result = [];
@@ -48,12 +51,13 @@ router.get("/read2/:Name", async (req, res) => {
         res.json(result);
     });
 });
+*/
 
 /*
  * localhost:3000/db/read3
  * find with Age
  * post test
- */
+ 
 router.post("/read3/", async (req, res) => {
     const promise = db.findbyAge(req.body.Age);
     let result = [];
@@ -69,30 +73,85 @@ router.post("/read3/", async (req, res) => {
         res.json(result);
     });
 });
+*/
 
 /* 
  * localhost:3000/db/testinput/one 
  * insert one element
  * post test
  */
-router.post("/insert/one", async (req, res) => {
-    if(!req.body.Name || !req.body.Age){
-        res.send("Not enough information for modeling.");
-    }else{
-        const promise = db.insert(req.body.Name, req.body.Age);
-        promise.then((promisevalue) => {
-            res.json(promisevalue);
-        });
+router.post("/insert", async (req, res) => {
+    date = req.body.Date;
+    price = req.body.Price;
+    second = date.slice(10, 12);
+    minute = date.slice(8, 10);
+
+    /* 서버 실행시 한번만 실행됨 */
+    if(!preprice)  preprice  = price;
+    if(!preminute) preminute = minute;
+    if(!presecond) {
+        presecond = second;
+        db.opinsert(date + 0, price);
     }
+    else {
+        if (presecond !== second) {
+            if (preminute !== minute) {
+                let tmpsecond = Number(second) + 60;
+                let tmpdate = date.slice(0, 8);
+                while (tmpsecond - 1 > Number(presecond)) {
+                    if(tmpsecond - 1 > 59){
+                        if(tmpsecond - 61 < 10){
+                            tmpsecond--;
+                            db.opinsert(tmpdate + minute + 0 + (tmpsecond - 60) + 0, preprice);
+                            db.cpinsert(tmpdate + minute + 0 + (tmpsecond - 60) + 1, preprice);
+                        }
+                        else{
+                            tmpsecond--;
+                            db.opinsert(tmpdate + minute + (tmpsecond - 60) + 0, preprice);
+                            db.cpinsert(tmpdate + minute + (tmpsecond - 60) + 1, preprice);
+                        }
+                    }
+                    else{
+                        tmpsecond--;
+                        db.opinsert(tmpdate + preminute + tmpsecond + 0, preprice);
+                        db.opinsert(tmpdate + preminute + tmpsecond + 1, preprice);
+                    }
+                }
+            }
+            else {
+                let tmpsecond = Number(second);
+                let tmpdate = date.slice(0, 10);
+                while (tmpsecond - 1 > Number(presecond)) {
+                    if(tmpsecond - 1 < 10){
+                        tmpsecond--;
+                        db.opinsert(tmpdate + 0 + tmpsecond + 0, preprice);
+                        db.cpinsert(tmpdate + 0 + tmpsecond + 1, preprice);
+                    }
+                    else{
+                        tmpsecond--;
+                        db.opinsert(tmpdate + tmpsecond + 0, preprice);
+                        db.cpinsert(tmpdate + tmpsecond + 1, preprice);
+                        console.log(tmpdate + tmpsecond + 1, preprice, "134");
+                    }
+                }
+            }
+            db.opinsert(date + 0, price);
+            presecond = second;
+            preminute = minute;
+            preprice  = price;
+        }
+        else if(presecond === second) {
+            db.cpinsert(date + 1, price);
+            preprice = price;
+        }
+    }
+    res.send("OK");
 });
 
 /* 
  * localhost:3000/db/testinput/one 
  * insert many element
  * post test
- * DB 저장은 동기여야 할까 비동기여야 할까??
- * 비동기식으로 저장할때는 결과값이 전달이 안된다. -> 그냥 시켜놓고 따른일을 하러감.
- * 동기로 하면 결과를 받아볼수 있다. -> 결과가 리턴될때까지 기다린다.
  */
 router.post("/insert/many", async (req, res) => {
     req.body.forEach((element) => {
