@@ -2,10 +2,11 @@
 const cluster = require("cluster");
 
 if(cluster.isMaster){
-    let numcpus = require("os").cpus().length;
-    for(let i = 0; i < numcpus; ++i){
-        cluster.fork();
-    }
+    //let numcpus = require("os").cpus().length;
+    //for(let i = 0; i < numcpus; ++i){
+    //    cluster.fork();
+    //}
+    cluster.fork();
 }
 else{
     /* Configuration */
@@ -21,14 +22,14 @@ else{
 
     /* DB_Connection */
     const dbconnect     = require("./DB/DB_connect.js");
-    dbconnect();
+    //dbconnect();
 
-    /* 
-    db 연결 유뮤 파악 가능 
+    
+    //db 연결 유뮤 파악 가능 
     const db = dbconnect();
     if(db) console.log("DB Connected!");
     else console.log("DB FAILED");
-    */
+    
 
     /* middle-ware setting */
     app.use(bodyparser.urlencoded({extended: false}));

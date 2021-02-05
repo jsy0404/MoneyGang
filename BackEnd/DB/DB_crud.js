@@ -1,20 +1,22 @@
 /* DB_Schema */
-const studentsch    = require("./DB_TestSchema.js");
-const HellBeanSsg   = studentsch();
+const testsch   = require("./DB_TestSchema.js");
+const testmodel = testsch();
 
 module.exports = () => {
     return {
+        /*
         findall : () => {
             return new Promise((resolve, reject) => {
                 HellBeanSsg.find({}, {}, (error, member) => {
                     if(error){
-                        reject(error);
+                        reject(error);vw
                     }else{
                         resolve(member);
                     }
                 });
             });
         },
+        
         findbyname : (arg1) => {
             return new Promise((resolve, reject) => {
                 HellBeanSsg.find({Name : arg1}, {}, (error, member) => {
@@ -26,24 +28,41 @@ module.exports = () => {
                 });
             });
         },
-        findbyAge : (arg1) => {
+        */
+        findocvalue : (date) => {
             return new Promise((resolve, reject) => {
-                HellBeanSsg.find({Age : arg1}, {}, (error, member) => {
+                testmodel.findOne({_id : date}, (error, member) => {
                     if(error){
-                        reject(error);
+                        resolve(null);
                     }else{
                         resolve(member);
                     }
                 });
             });
         },
-        insert : (arg1) => {
+        opinsert : (date, price) => {
             let modeling =  {
-                Name : arg1.Name,
-                Age : arg1.Age
+                _id : date,
+                Value : price,
+                OCvalue : 0
             };
-            const newhellbeanssg = new HellBeanSsg(modeling);
-            newhellbeanssg.save(function(error, data){
+            const newtestmodel = new testmodel(modeling);
+            newtestmodel.save((error, data) => {
+                if(error){
+                    return(error);
+                }else{
+                    return(data);
+                }
+            });
+        },
+        cpinsert : (date, price) => {
+            let modeling =  {
+                _id : date,
+                Value : price,
+                OCvalue : 1
+            };
+            const newtestmodel = new testmodel(modeling);
+            newtestmodel.save((error, data) => {
                 if(error){
                     return(error);
                 }else{
