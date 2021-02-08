@@ -12,10 +12,26 @@ let presecond       = null;
 let preminute       = null;
 
 router.post("/read1", async (req, res) => {
-    let oValue = null, cValue = null;
+    let date = req.body.Date.split("_");
+    console.log(date.length);
+    if(date.length === 1){
+        db.find
+    }
+    /*
+    let ovalue = null, cvalue = null;
+    const opromise = db.findocvalue(req.body.Date + "_0");
+    opromise.then((ov) => {
+        ovalue = ov;
+        const cpromise = db.findocvalue(req.body.Date + "_1");
+        cpromise.then((cv) => {
+            cvalue = cv;
+            console.log(ovalue, cvalue);
+        });
+    });
+    */
 
     /*
-    const promise = db.findall();
+    const promise = db.findall();   
     let result = [];
     promise.then((promisevalue) => {
         promisevalue.forEach((element) => {
@@ -81,67 +97,71 @@ router.post("/read3/", async (req, res) => {
  * post test
  */
 router.post("/insert", async (req, res) => {
-    date = req.body.Date;
+    let date = req.body.Date.split("_");
+    let year = date[0];
+    let month = date[1];
+    let day = date[2];
+    let hour = date[3];
+    let minute = date[4];
+    let second = date[5];
+    date = year + "_" + month + "_" + day + "_" + hour + "_" + minute + "_" + second; 
     price = req.body.Price;
-    second = date.slice(10, 12);
-    minute = date.slice(8, 10);
 
     /* 서버 실행시 한번만 실행됨 */
     if(!preprice)  preprice  = price;
     if(!preminute) preminute = minute;
     if(!presecond) {
         presecond = second;
-        db.opinsert(date + 0, price);
+        db.opinsert(date + "_0", price);
     }
     else {
         if (presecond !== second) {
             if (preminute !== minute) {
                 let tmpsecond = Number(second) + 60;
-                let tmpdate = date.slice(0, 8);
+                let tmpdate = year + "_" + month + "_" + day + "_" + hour; 
                 while (tmpsecond - 1 > Number(presecond)) {
                     if(tmpsecond - 1 > 59){
                         if(tmpsecond - 61 < 10){
                             tmpsecond--;
-                            db.opinsert(tmpdate + minute + 0 + (tmpsecond - 60) + 0, preprice);
-                            db.cpinsert(tmpdate + minute + 0 + (tmpsecond - 60) + 1, preprice);
+                            db.opinsert(tmpdate + "_" + minute + "_0" + (tmpsecond - 60) + "_0", preprice);
+                            db.cpinsert(tmpdate + "_" + minute + "_0" + (tmpsecond - 60) + "_1", preprice);
                         }
                         else{
                             tmpsecond--;
-                            db.opinsert(tmpdate + minute + (tmpsecond - 60) + 0, preprice);
-                            db.cpinsert(tmpdate + minute + (tmpsecond - 60) + 1, preprice);
+                            db.opinsert(tmpdate + "_" + minute + "_" + (tmpsecond - 60) + "_0", preprice);
+                            db.cpinsert(tmpdate + "_" + minute + "_" + (tmpsecond - 60) + "_1", preprice);
                         }
                     }
                     else{
                         tmpsecond--;
-                        db.opinsert(tmpdate + preminute + tmpsecond + 0, preprice);
-                        db.opinsert(tmpdate + preminute + tmpsecond + 1, preprice);
+                        db.opinsert(tmpdate + "_" + preminute + "_" + tmpsecond + "_0", preprice);
+                        db.opinsert(tmpdate + "_" + preminute + "_" + tmpsecond + "_1", preprice);
                     }
                 }
             }
             else {
                 let tmpsecond = Number(second);
-                let tmpdate = date.slice(0, 10);
+                let tmpdate = year + "_" + month + "_" + day + "_" + hour + "_" + minute; 
                 while (tmpsecond - 1 > Number(presecond)) {
                     if(tmpsecond - 1 < 10){
                         tmpsecond--;
-                        db.opinsert(tmpdate + 0 + tmpsecond + 0, preprice);
-                        db.cpinsert(tmpdate + 0 + tmpsecond + 1, preprice);
+                        db.opinsert(tmpdate + "_0" + tmpsecond + "_0", preprice);
+                        db.cpinsert(tmpdate + "_0" + tmpsecond + "_1", preprice);
                     }
                     else{
                         tmpsecond--;
-                        db.opinsert(tmpdate + tmpsecond + 0, preprice);
-                        db.cpinsert(tmpdate + tmpsecond + 1, preprice);
-                        console.log(tmpdate + tmpsecond + 1, preprice, "134");
+                        db.opinsert(tmpdate + "_" + tmpsecond + "_0", preprice);
+                        db.cpinsert(tmpdate + "_" + tmpsecond + "_1", preprice);
                     }
                 }
             }
-            db.opinsert(date + 0, price);
+            db.opinsert(date + "_0", price);
             presecond = second;
             preminute = minute;
             preprice  = price;
         }
         else if(presecond === second) {
-            db.cpinsert(date + 1, price);
+            db.cpinsert(date + "_1", price);
             preprice = price;
         }
     }

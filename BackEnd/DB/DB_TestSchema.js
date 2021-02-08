@@ -4,7 +4,7 @@ const schema   = mongoose.Schema;
 module.exports = () => {
     const hellbeanssg = schema({
         _id         : "string",
-        Value       : "number",
+        Price       : "number",
         OCvalue     : "number"
     },{
         versionKey : false

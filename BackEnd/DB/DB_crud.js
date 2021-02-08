@@ -31,11 +31,11 @@ module.exports = () => {
         */
         findocvalue : (date) => {
             return new Promise((resolve, reject) => {
-                testmodel.findOne({_id : date}, (error, member) => {
+                testmodel.findOne({_id : date}, (error, data) => {
                     if(error){
                         resolve(null);
                     }else{
-                        resolve(member);
+                        resolve(data);
                     }
                 });
             });
@@ -43,7 +43,7 @@ module.exports = () => {
         opinsert : (date, price) => {
             let modeling =  {
                 _id : date,
-                Value : price,
+                Price : price,
                 OCvalue : 0
             };
             const newtestmodel = new testmodel(modeling);
@@ -58,7 +58,7 @@ module.exports = () => {
         cpinsert : (date, price) => {
             let modeling =  {
                 _id : date,
-                Value : price,
+                Price : price,
                 OCvalue : 1
             };
             const newtestmodel = new testmodel(modeling);
