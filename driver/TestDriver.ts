@@ -25,11 +25,10 @@ class TestDriver {
 	}
 
 	Sell(price: number): void {
-		if (this.lastPrice == 0) {
+		if (this.lastPrice === 0) {
 			return;
 		}
 		this.Balance += (((price - this.lastPrice) / this.lastPrice) - this.fee) * this.getDivision();
-		console.log("Balance: " + this.Balance);
 	}
 
 }

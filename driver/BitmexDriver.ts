@@ -6,22 +6,22 @@ import { IncomingHttpHeaders } from "http";
 import crypto from "crypto";
 import BitMEXClient from "bitmex-realtime-api";
 import { CallbackDriver } from "driver/CallbackDriver";
-import { API_KEY, API_SECRET } from "./configure.json"
+import { API_KEY, API_SECRET } from "./configure.json";
 
-interface buyData  {symbol: string; orderQty: number; price: number; side: string; ordType: string; execInst: string};
-interface sellData  {symbol: string; orderQty: number; side: string; ordType: string;};
+interface buyData  {symbol: string; orderQty: number; price: number; side: string; ordType: string; execInst: string}
+interface sellData  {symbol: string; orderQty: number; side: string; ordType: string;}
 
 export
 class BitmexDriver{
 	bitmexClient:	any;// BitMEXClient;
 	callbackDriver: CallbackDriver;
-	get_verb:		string = "GET";
-	post_verb:		string = "POST";
-	delete_verb:	string = "DELETE";
-	order_path:		string = "/api/v1/order";
+	getVerb:		string = "GET";
+	postVerb:		string = "POST";
+	deleteVerb:	string = "DELETE";
+	orderPath:		string = "/api/v1/order";
 	position_path:	string = "/api/v1/position";
-	delete_path:	string = "/api/v1/order/all";
-	base_url:		string = "https://www.bitmex.com";
+	deletePath:	string = "/api/v1/order/all";
+	baseUrl:		string = "https://www.bitmex.com";
 	headers:		IncomingHttpHeaders;
 	buyOrder:		buyData;
 	sellOrder:		sellData;
@@ -68,7 +68,7 @@ class BitmexDriver{
 		this.query = "?symbol=XBT&reverse=true&count=1";
 	}
 
-	Order(quotePrice: number, stopPrice: number, quoteAmt: number, orderType: boolean): Map<string, string> {
+	order(quotePrice: number, stopPrice: number, quoteAmt: number, orderType: boolean): Map<string, string> {
 		this.buyOrder.orderQty = quoteAmt;
 		if (orderType) {
 			this.buyOrder.price = quotePrice-0.5;
@@ -77,42 +77,42 @@ class BitmexDriver{
 			this.buyOrder.price = quotePrice+0.5;
 			this.buyOrder.side = "Sell";
 		}
-		return this.sendRequest(this.order_path, this.post_verb, this.buyOrder);
+		return this.sendRequest(this.orderPath, this.postVerb, this.buyOrder);
 
 
 	}
 
 	deleteOrder(): Map<string, string> {
-		return this.sendRequest(this.delete_path, this.delete_verb, {});
+		return this.sendRequest(this.deletePath, this.deleteVerb, {});
 	}
 
 	getPosition(): Array<any> {
-		return this.sendRequest(this.position_path, this.get_verb, {});
+		return this.sendRequest(this.position_path, this.getVerb, {});
 	}
 
 	getOrder(): any {
-		return this.sendRequest(this.order_path + this.query, this.get_verb, {});
+		return this.sendRequest(this.orderPath + this.query, this.getVerb, {});
 	}
 
 	sendRequest(path: string, verb: string, data: {}): any {
 		let body:  string = JSON.stringify(data);
 		let expires:   string = (Math.round(new Date().getTime() / 1000) + 60).toString();
-		let signature_update: string = verb + path + expires;
-		let request_message: Options = {};
+		let signatureUpdate: string = verb + path + expires;
+		let requestMessage: Options = {};
 
-		if (verb == "POST") {
-			signature_update += body;
-			request_message["body"] =  body;
+		if (verb === "POST") {
+			signatureUpdate += body;
+			requestMessage["body"] =  body;
 		}
 		let signature: string = crypto.createHmac("sha256", API_SECRET)
-			.update(signature_update)
+			.update(signatureUpdate)
 			.digest("hex");
 
 
 		this.headers["api-expires"] = expires;
 		this.headers["api-signature"] = signature;
-		request_message["headers"] = this.headers;
+		requestMessage["headers"] = this.headers;
 
-		return JSON.parse(request(verb as any, this.base_url + path, request_message).getBody("utf8"));
+		return JSON.parse(request(verb as any, this.baseUrl + path, requestMessage).getBody("utf8"));
 	}
 }
