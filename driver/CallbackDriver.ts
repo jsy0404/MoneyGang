@@ -18,15 +18,8 @@ class CallbackDriver{
 		let curPos: number = parseFloat(this.bitmexDriver.getPosition()[0]["avgCostPrice"]!);
 		if (opCode === 1 && isNaN(curPos)) {
 			this.curOrder = false;
-			if (this.deleteTimer != null) {
-				clearTimeout(this.deleteTimer);
-			}
 			this.bitmexDriver.order(orderPrice, orderPrice, 1, true);
-			this.deleteTimer = setTimeout(() => {
-				if (!this.curOrder) {
-					this.bitmexDriver.deleteOrder();
-				}
-			}, 10000);
+			this.setTimer();
 		}
 		if (!isNaN(curPos) && !this.curOrder) {
 			this.curOrder = true;
@@ -39,5 +32,16 @@ class CallbackDriver{
 	async tradeInfo(data: {[key: string]: number}) {
 		let price: number = data["price"]!;
 		let opCode: number;
+	}
+
+	setTimer(): void {
+		if (this.deleteTimer != null) {
+			clearTimeout(this.deleteTimer);
+		}
+		this.deleteTimer = setTimeout(() => {
+			if (!this.curOrder) {
+				this.bitmexDriver.deleteOrder();
+			}
+		}, 10000);
 	}
 }

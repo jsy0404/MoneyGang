@@ -19,7 +19,7 @@ class BitmexDriver{
 	postVerb:		string = "POST";
 	deleteVerb:	string = "DELETE";
 	orderPath:		string = "/api/v1/order";
-	position_path:	string = "/api/v1/position";
+	positionPath:	string = "/api/v1/position";
 	deletePath:	string = "/api/v1/order/all";
 	baseUrl:		string = "https://www.bitmex.com";
 	headers:		IncomingHttpHeaders;
@@ -87,7 +87,7 @@ class BitmexDriver{
 	}
 
 	getPosition(): Array<any> {
-		return this.sendRequest(this.position_path, this.getVerb, {});
+		return this.sendRequest(this.positionPath, this.getVerb, {});
 	}
 
 	getOrder(): any {
