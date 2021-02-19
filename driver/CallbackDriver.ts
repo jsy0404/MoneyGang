@@ -1,17 +1,14 @@
 import { BitmexDriver } from "./BitmexDriver";
 import { PrintDriver }  from "./PrintDriver";
-import { GoldenCross } from "algorithm/GoldenCross";
 import { TestDriver } from "./TestDriver";
 
 export
 class CallbackDriver{
-	goldenCross:				GoldenCross;
 	bitmexDriver:				BitmexDriver;
 	curOrder:					boolean;
 	deleteTimer:				ReturnType<typeof setTimeout> | null;
 	constructor(bitmexDriver: BitmexDriver){
 		let orderCall: Function = this.order
-		this.goldenCross = new GoldenCross(20, 1, orderCall);
 		this.bitmexDriver = bitmexDriver;
 		this.curOrder = false;
 		this.deleteTimer = null;
@@ -48,6 +45,5 @@ class CallbackDriver{
 	async tradeInfo(data: {[key: string]: number}) {
 		let price: number = data["price"]!;
 		let opCode: number;
-		await this.goldenCross.setLastPrice(price);
 	}
 }
