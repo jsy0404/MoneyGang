@@ -18,7 +18,7 @@ class CallbackDriver{
 		if (opCode === 1) {
 			this.buyOrder(orderPrice, 1);
 		}
-		if (opCode === 0 && this.sellFilled) {
+		if (opCode === 0) {
 			let curPos: number = parseFloat(this.bitmexDriver.getPosition()[0]["avgCostPrice"]!);
 			this.sellOrder(curPos > orderPrice ? curPos : orderPrice, 1);
 		}
