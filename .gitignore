@@ -24,6 +24,12 @@ BackEnd/config설명.txt
 BackEnd/configuration.json
 
 
+# Alogorithm
+algorithm/bitmex/driver/configure.json
+
+# Driver
+*configure.json
+
 # Logs
 logs
 *.log

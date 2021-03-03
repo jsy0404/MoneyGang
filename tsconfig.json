@@ -75,13 +75,8 @@
 	"driver/typing.d.ts",
 	"driver/CallbackDriver.ts",
 	"driver/BitmexDriver.ts",
-	"driver/PrintDriver.ts",
-	"main.ts",
-	"driver/DatabaseDriver.ts",
-	"algorithm/GoldenCross.ts",
-	"algorithm/MovingAverage.ts",
-	"algorithm/Breakout.ts",
-	"algorithm/mutex_lock.ts",
-	"algorithm/TotalSignal.ts"
+	"driver/OrderBook.ts",
+	"driver/TestDriver.ts",
+	"main.ts"
   ]
 }

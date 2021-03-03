@@ -11,6 +11,7 @@ class OrderbookDriver{
 		this.quoteAmountAvg = 4;
 		this.traceCountThreshold = 1;
 		this.traceQuoteThreshold = 100;
+		this.emergenceQuoteThreshold = 1000000;
 		this.quoteList   = new Map<number, number>();
 		this.orderBook   = new Map<number, number>();
 		this.quoteBook   = new Map<number, Array<number>>();

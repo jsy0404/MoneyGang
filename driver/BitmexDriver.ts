@@ -10,17 +10,17 @@ import { API_KEY, API_SECRET } from "./configure.json";
 
 interface buyData  {symbol: string; orderQty: number; price: number; side: string; ordType: string; execInst: string}
 interface sellData  {symbol: string; orderQty: number; side: string; ordType: string;}
-
+interface order {side: string, ordStatus: string}
 export
 class BitmexDriver{
 	bitmexClient:	any;// BitMEXClient;
 	callbackDriver: CallbackDriver;
 	getVerb:		string = "GET";
 	postVerb:		string = "POST";
-	deleteVerb:	string = "DELETE";
+	deleteVerb:		string = "DELETE";
 	orderPath:		string = "/api/v1/order";
 	positionPath:	string = "/api/v1/position";
-	deletePath:	string = "/api/v1/order/all";
+	deletePath:		string = "/api/v1/order/all";
 	baseUrl:		string = "https://www.bitmex.com";
 	headers:		IncomingHttpHeaders;
 	buyOrder:		buyData;
@@ -30,9 +30,17 @@ class BitmexDriver{
 	constructor(){
 		let bitmexDriver: BitmexDriver= this;
 		this.callbackDriver = new CallbackDriver(bitmexDriver);
-		this.bitmexClient = new BitMEXClient({apiKeyID: API_KEY});
+		this.bitmexClient = new BitMEXClient({apiKeyID: API_KEY, apiKeySecret: API_SECRET});
 		this.bitmexClient.addStream("XBTUSD", "trade", (data: []) => {
 			this.callbackDriver.tradeInfo(data[data.length-1]);
+		});
+		this.bitmexClient.addStream("XBTUSD", "order", (data: []) => {
+			let col: order = data[data.length-1];
+			let side: string = col["side"];
+			let stat: string = col["ordStatus"];
+			if (stat === "filled") {
+				this.bitmexClient.setOrderFinished(side);
+			}
 		});
 		/*
 		this.bitmexClient.addStream("XBTUSD", "orderBookL2_25", (data: []) => {

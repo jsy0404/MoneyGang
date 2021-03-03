@@ -1,28 +1,28 @@
-import { BitmexDriver } from "./BitmexDriver";
-import { PrintDriver }  from "./PrintDriver";
-import { TestDriver } from "./TestDriver";
+import { BitmexDriver } from "driver/BitmexDriver";
 
 export
 class CallbackDriver{
-	bitmexDriver:				BitmexDriver;
-	curOrder:					boolean;
-	deleteTimer:				ReturnType<typeof setTimeout> | null;
+	bitmexDriver:	BitmexDriver;
+	deleteTimer:	ReturnType<typeof setTimeout> | null;
+	buyFilled:		boolean;
+	sellFilled:		boolean;
 	constructor(bitmexDriver: BitmexDriver){
 		let orderCall: Function = this.order;
 		this.bitmexDriver = bitmexDriver;
-		this.curOrder = false;
 		this.deleteTimer = null;
+		this.buyFilled = true;
+		this.sellFilled = true;
 	}
 
 	async order(orderPrice:number, opCode: number) {
 		let curPos: number = parseFloat(this.bitmexDriver.getPosition()[0]["avgCostPrice"]!);
-		if (opCode === 1 && isNaN(curPos)) {
-			this.curOrder = false;
+		if (opCode === 1 && this.buyFilled) {
+			this.buyFilled = false;
 			this.bitmexDriver.order(orderPrice, orderPrice, 1, true);
-			this.setTimer();
+			this.setDeleteOrderTimer();
 		}
-		if (!isNaN(curPos) && !this.curOrder) {
-			this.curOrder = true;
+		if (opCode === 0 && this.sellFilled) {
+			this.sellFilled = false;
 			this.deleteTimer = null;
 			this.bitmexDriver.deleteOrder();
 			this.bitmexDriver.order(curPos > orderPrice ? curPos : orderPrice, curPos, 1, false);
@@ -34,14 +34,23 @@ class CallbackDriver{
 		let opCode: number;
 	}
 
-	setTimer(): void {
+	setDeleteOrderTimer(): void {
 		if (this.deleteTimer != null) {
 			clearTimeout(this.deleteTimer);
 		}
 		this.deleteTimer = setTimeout(() => {
-			if (!this.curOrder) {
+			if (!this.buyFilled) {
 				this.bitmexDriver.deleteOrder();
 			}
 		}, 10000);
+	}
+
+	setOrderFinished(side: string) {
+		if (side === "Buy") {
+			this.buyFilled = true;
+		}
+		else if (side === "Sell") {
+			this.sellFilled = true;
+		}
 	}
 }
