@@ -1,13 +1,13 @@
-/* configuration */
-const express       = require("express");
+import {Router as router} from "express";
 
-/* router */
-const routes        = express.Router;
-const router        = routes();
+const Router = router();
 
-/* localhost:3000 */
-router.get("/", (req, res) => {
-    res.send("Hello World!");
+Router.get("/", (req, res) => {
+    res.send("Hello ES6!!!!");
 });
 
-module.exports = router;
+Router.get("/router", (req, res) => {
+    res.send("Hello World!!!!");
+});
+
+export default Router;

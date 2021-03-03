@@ -1,42 +1,29 @@
-/* Multi-Thread */
-const cluster = require("cluster");
+/* import modules */
+import express from "express";
+import cluster from "cluster";
+import bodyparser from "body-parser";
+import cors from "cors";
+import os from "os";
+import config from "./configuration.js";
+import indexRouter from "./Router/index.js";
+import dbRouter from "./Router/index_DB.js";
 
-if(cluster.isMaster){
-    //let numcpus = require("os").cpus().length;
-    //for(let i = 0; i < numcpus; ++i){
-    //    cluster.fork();
+if (cluster.isMaster) {
+    let numcpus = os.cpus().length / 2;
+    for (let i = 0; i < numcpus; ++i) { cluster.fork(); }
+    //    cluster.on("exit", (worker, code, signal) => {
+    //        // console.log("Worker terminated" + worker.id);
+    //        if (code === 200) { cluster.fork(); }
+    //    });
     //}
-    cluster.fork();
-}
-else{
-    /* Configuration */
-    const express       = require("express");
-    const bodyparser    = require("body-parser");
-    const cors          = require("cors");
-    const config        = require("./configuration.json");
-    const app           = express();
-
-    /* router */
-    const indexRouter   = require("./Router/index.js");
-    const dbRounter     = require("./Router/index_DB.js");
-
-    /* DB_Connection */
-    const dbconnect     = require("./DB/DB_connect.js");
-    //dbconnect();
-
-    
-    //db 연결 유뮤 파악 가능 
-    const db = dbconnect();
-    if(db) console.log("DB Connected!");
-    else console.log("DB FAILED");
-    
-
-    /* middle-ware setting */
-    app.use(bodyparser.urlencoded({extended: false}));
+} else {
+    // console.log("Worker created : " + cluster.worker.id);
+    const app = express();
+    app.use(bodyparser.urlencoded({ extended: true }));
     app.use(bodyparser.json());
     app.use(cors());
     app.use("/", indexRouter);
-    app.use("/db", dbRounter);
-
+    app.use("/db", dbRouter);
+    // app.listen(config.port, () => { console.log(`${config.port} is listening`) });
     app.listen(config.port);
 }
