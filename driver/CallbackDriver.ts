@@ -15,17 +15,29 @@ class CallbackDriver{
 	}
 
 	async order(orderPrice:number, opCode: number) {
-		let curPos: number = parseFloat(this.bitmexDriver.getPosition()[0]["avgCostPrice"]!);
-		if (opCode === 1 && this.buyFilled) {
-			this.buyFilled = false;
-			this.bitmexDriver.order(orderPrice, orderPrice, 1, true);
-			this.setDeleteOrderTimer();
+		if (opCode === 1) {
+			this.buyOrder(orderPrice, 1);
 		}
 		if (opCode === 0 && this.sellFilled) {
+			let curPos: number = parseFloat(this.bitmexDriver.getPosition()[0]["avgCostPrice"]!);
+			this.sellOrder(curPos > orderPrice ? curPos : orderPrice, 1);
+		}
+	}
+
+	async buyOrder(price: number, amount: number) {
+		if (this.buyFilled) {
+			this.buyFilled = false;
+			this.bitmexDriver.order(price, price, amount, true);
+			this.setDeleteOrderTimer();
+		}
+	}
+
+	async sellOrder(price: number, amount: number) {
+		if (this.sellFilled) {
 			this.sellFilled = false;
 			this.deleteTimer = null;
 			this.bitmexDriver.deleteOrder();
-			this.bitmexDriver.order(curPos > orderPrice ? curPos : orderPrice, curPos, 1, false);
+			this.bitmexDriver.order(price, price/*curPos*/, amount, false);
 		}
 	}
 
