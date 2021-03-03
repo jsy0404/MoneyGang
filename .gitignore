@@ -23,6 +23,12 @@ BackEnd/package-lock.json
 BackEnd/configuration.js
 
 
+# Alogorithm
+algorithm/bitmex/driver/configure.json
+
+# Driver
+*configure.json
+
 # Logs
 logs
 *.log

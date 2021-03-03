@@ -1,46 +1,29 @@
-import { BitmexDriver } from "./BitmexDriver";
-import { PrintDriver }  from "./PrintDriver";
-
 export
-class CallbackDriver{
-	lastPrice:						number;
-	lastValue:						number;
-	quoteAmountAvg:					number;
-	traceCountThreshold:			number;
-	traceQuoteThreshold:			number;
-	emergenceQuoteThreshold:		number;
-	printDriver:			   PrintDriver;
-	quoteList:		   Map<number, number>;
-	orderBook:		   Map<number, number>;
-	quoteBook:  Map<number, Array<number>>;
-
+class OrderbookDriver{
+	quoteAmountAvg:				number;
+	traceCountThreshold:		number;
+	traceQuoteThreshold:		number;
+	emergenceQuoteThreshold:	number;
+	quoteList:					Map<number, number>;
+	orderBook:					Map<number, number>;
+	quoteBook:					Map<number, Array<number>>;
 	constructor(){
-		this.lastPrice = 0;
-		this.lastValue = 0;
 		this.quoteAmountAvg = 4;
 		this.traceCountThreshold = 1;
 		this.traceQuoteThreshold = 100;
-		this.emergenceQuoteThreshold = 10000000;
-		this.printDriver = new PrintDriver();
+		this.emergenceQuoteThreshold = 1000000;
 		this.quoteList   = new Map<number, number>();
 		this.orderBook   = new Map<number, number>();
 		this.quoteBook   = new Map<number, Array<number>>();
 	}
 
-
-	tradeInfo(data: Map<String, number>): void {
-		this.lastPrice = data["price"];
-		this.lastValue = data["size"];
-	}
-
-
-	orderBookInfo(data: []): void{
+	orderBookInfo(data: Array<{[key: string]: number}>): void{
 		let price: number;
 		let size:  number;
 		let quote:  number;
 		data.forEach((row) => {
-			price = row["price"];
-			size = row["size"];
+			price = row["price"]!;
+			size = row["size"]!;
 			if (this.orderBook.has(price)) {
 				quote = Math.abs(this.orderBook.get(price)! - size);
 				if (quote > this.traceQuoteThreshold) {
@@ -49,24 +32,20 @@ class CallbackDriver{
 			}
 			this.orderBook.set(price, size);
 		});
-		//console.clear();
-		//this.printDriver.printOrderBook(this.sortDictByKey(this.orderBook), this.lastPrice, this.lastValue);
 	}
 
 
 	addQuote(price: number, quote: number): void{
 		let count: number;
 		if (this.quoteList.has(price)) {
+			count = this.quoteList.get(price)!;
 			this.quoteList.set(price, count+1);
-			count = this.quoteList.get(price);
 			if (count === this.traceCountThreshold){
 				let arr: Array<number> = new Array<number>();
 				arr.push(quote);
 				this.quoteBook.set(price, arr);
 			} else if (count > this.traceCountThreshold){
 				this.quoteBook.get(price)!.push(quote);
-				//console.clear();
-				//this.printDriver.printOrderBook(this.sortDictByKey(this.quoteBook), price, quote);
 			}
 		} else {
 			this.quoteList.set(price, 0);
