@@ -28,7 +28,6 @@ class MovingAverage {
 		}
 
 		this.mvAvg -= this.recentPriceList.shift()!/this.length;
-		console.log("Avg: " + this.mvAvg);
 		this.mvAvgList.push(this.mvAvg);
 	}
 
