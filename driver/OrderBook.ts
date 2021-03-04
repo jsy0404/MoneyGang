@@ -50,37 +50,37 @@ class OrderbookDriver{
 		} else {
 			this.quoteList.set(price, 0);
 		}
-		if (this.quoteBook.size >40){
-			this.resetQuoteBook();
-		}
+		this.resetQuoteBook();
 	}
 
 
 	resetQuoteBook(): void{
-		for (let i=0; i<10; ++i){
-			let min: number = 1000;
-			let key: string = "";
-			let rowLength: number;
-			let avg: number = 0;
-			let sorted = this.sortDictByKey(this.quoteBook);
-			sorted.forEach((elem: Array<any>) => {
-				rowLength = elem[1].length;
-				avg += rowLength;
-				if (rowLength > this.quoteAmountAvg && this.quoteAmountAvg > 4){
-					this.quoteBook.delete(parseFloat(elem[0]));
-					this.quoteList.delete(parseFloat(elem[0]));
-					return;
-				}
-				if (rowLength < min){
-					min = rowLength;
-					key = elem[0];
-				}
-			});
+		if (this.quoteBook.size > 40){
+			for (let i=0; i<10; ++i){
+				let min: number = 1000;
+				let key: string = "";
+				let rowLength: number;
+				let avg: number = 0;
+				let sorted = this.sortDictByKey(this.quoteBook);
+				sorted.forEach((elem: Array<any>) => {
+					rowLength = elem[1].length;
+					avg += rowLength;
+					if (rowLength > this.quoteAmountAvg && this.quoteAmountAvg > 4){
+						this.quoteBook.delete(parseFloat(elem[0]));
+						this.quoteList.delete(parseFloat(elem[0]));
+						return;
+					}
+					if (rowLength < min){
+						min = rowLength;
+						key = elem[0];
+					}
+				});
 
-			this.quoteAmountAvg = (avg/sorted.length);
-			if (Math.max(...this.quoteBook.get(parseFloat(key))!) < this.emergenceQuoteThreshold){
-				this.quoteBook.delete(parseFloat(key));
-				this.quoteList.delete(parseFloat(key));
+				this.quoteAmountAvg = (avg/sorted.length);
+				if (Math.max(...this.quoteBook.get(parseFloat(key))!) < this.emergenceQuoteThreshold){
+					this.quoteBook.delete(parseFloat(key));
+					this.quoteList.delete(parseFloat(key));
+				}
 			}
 		}
 	}
