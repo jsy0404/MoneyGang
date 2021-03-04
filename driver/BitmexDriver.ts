@@ -35,30 +35,16 @@ class BitmexDriver{
 			this.callbackDriver.tradeInfo(data[data.length-1]);
 		});
 		this.bitmexClient.addStream("XBTUSD", "order", (data: []) => {
-<<<<<<< HEAD
 			if (data.length < 1) {
 				return;
 			}
 			let col: order = data[data.length-1];
 			let side: string = col["side"];
 			let stat: string = col["ordStatus"];
-			console.log(data);
 			if (stat === "filled") {
 				this.callbackDriver.setOrderFinished(side);
-=======
-			let col: order = data[data.length-1];
-			let side: string = col["side"];
-			let stat: string = col["ordStatus"];
-			if (stat === "filled") {
-				this.bitmexClient.setOrderFinished(side);
->>>>>>> 533e12b3112a603a68ea71317e12ba5b52c28c38
 			}
 		});
-		/*
-		this.bitmexClient.addStream("XBTUSD", "orderBookL2_25", (data: []) => {
-			this.callbackDriver.orderBookInfo(data);
-		});
-		*/
 
 		this.headers = {
 			"content-type": "application/json",

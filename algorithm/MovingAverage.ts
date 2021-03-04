@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Algorithm } from "algorithm/AlgorithmModule";
 
 export
@@ -34,39 +33,6 @@ class MovingAverage extends Algorithm {
 		}
 
 		return;
-=======
-import { Mutex } from "algorithm/mutex_lock";
-
-export
-class MovingAverage {
-	mvAvg:				number;
-	length:				number;
-	lastPrice:			number;
-	mvAvgList:			Array<number>;
-	recentPriceList:	Array<number>;
-
-	constructor(length: number) {
-		this.mvAvg = 0;
-		this.length = length;
-		this.recentPriceList = new Array<number>();
-		this.mvAvgList = new Array<number>();
-	}
-
-	pushPrice(price: number, time: number): void {
-		let normalizedPrice: number = price/this.length;
-
-		if (this.recentPriceList.length < this.length + 1) {
-			//push
-		} else if 
-		this.recentPriceList.push(price);
-		this.mvAvg += normalizedPrice;
-		if (this.recentPriceList.length < this.length + 1) {
-			return;
-		}
-
-		this.mvAvg -= this.recentPriceList.shift()!/this.length;
-		this.mvAvgList.push(this.mvAvg);
->>>>>>> 533e12b3112a603a68ea71317e12ba5b52c28c38
 	}
 
 	getPastMvAvg(index: number = 0): number {
