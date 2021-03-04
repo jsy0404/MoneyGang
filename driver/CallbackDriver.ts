@@ -2,10 +2,10 @@ import { BitmexDriver } from "driver/BitmexDriver";
 
 export
 class CallbackDriver{
-	bitmexDriver:	BitmexDriver;
-	deleteTimer:	ReturnType<typeof setTimeout> | null;
 	buyFilled:		boolean;
 	sellFilled:		boolean;
+	bitmexDriver:	BitmexDriver;
+	deleteTimer:	ReturnType<typeof setTimeout> | null;
 	constructor(bitmexDriver: BitmexDriver){
 		let orderCall: Function = this.order;
 		this.bitmexDriver = bitmexDriver;
@@ -43,7 +43,6 @@ class CallbackDriver{
 
 	async tradeInfo(data: {[key: string]: number}) {
 		let price: number = data["price"]!;
-		let opCode: number;
 	}
 
 	setDeleteOrderTimer(): void {
@@ -52,6 +51,7 @@ class CallbackDriver{
 		}
 		this.deleteTimer = setTimeout(() => {
 			if (!this.buyFilled) {
+				this.buyFilled = true;
 				this.bitmexDriver.deleteOrder();
 			}
 		}, 10000);

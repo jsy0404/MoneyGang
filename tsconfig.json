@@ -72,11 +72,16 @@
     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
   },
   "files": [
-	"driver/typing.d.ts",
+	"typing.d.ts",
 	"driver/CallbackDriver.ts",
 	"driver/BitmexDriver.ts",
 	"driver/OrderBook.ts",
 	"driver/TestDriver.ts",
+	"algorithm/AlgorithmModule.ts",
+	"algorithm/MovingAverage.ts",
+	"algorithm/GoldenCross.ts",
+	"algorithm/Breakout.ts",
+	"algorithm/mutex_lock.ts",
 	"main.ts"
   ]
 }
