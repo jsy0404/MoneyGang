@@ -1,47 +1,30 @@
 import { MovingAverage } from "algorithm/MovingAverage";
+import { Algorithm } from "algorithm/AlgorithmModule";
 
 export
-class Breakout {
-	movingAverage: MovingAverage;
-	sendSignal: Function;
-	lastPrice: number;
+class Breakout extends Algorithm {
+	movingAverage:	MovingAverage;
 
-	constructor(length: number, baseTime: number, sendSignal: Function) {
-		this.lastPrice = 0;
-		this.sendSignal = sendSignal;
-		this.movingAverage = new MovingAverage(length);
-		setInterval(() => {
-			this.pushPeriodic();
-		}, baseTime*1000);
+	constructor(length: number, baseTime: number, receiver: Function) {
+		super(receiver);
+		this.movingAverage = new MovingAverage(length, 1, this.check);
 	}
 
-	async pushPeriodic() {
-		let price: number = this.lastPrice;
-		this.movingAverage.pushPrice(price);
+	setLastPrice(price: number): void {
+		super.setLastPrice(price);
+		this.movingAverage.setLastPrice(price);
 	}
 
-	pushPrice(price: number): void {
-		this.lastPrice = price;
-		let opCode: number = this.check();
-		console.log("Breakout: " + opCode);
-		if (opCode != -1) {
-			this.sendSignal(opCode);
-		}
-
-	}
-
-	check(): number {
+	check(currMvAvg: number): void {
 		let pastMvAvg: number = this.movingAverage.getPastMvAvg(1);
 		let pastPrice: number = this.movingAverage.getPastPrice(1);
-		let currMvAvg: number = this.movingAverage.getPastMvAvg(0);
 		let curr: boolean = currMvAvg < this.lastPrice;
 		let past: boolean = pastMvAvg > pastPrice;
 		if (curr === true && past === true) {
-			return 1;
+			this.receiver(1);
 		} else if (curr === false && past === false) {
-			return 0;
+			this.receiver(0);
 		}
-		return -1;
 	}
 
 }
