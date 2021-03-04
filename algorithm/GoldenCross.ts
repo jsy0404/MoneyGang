@@ -6,10 +6,10 @@ class GoldenCross extends Algorithm {
 	longMovingAvg:	MovingAverage;
 	shortMovingAvg: MovingAverage;
 
-	constructor(short_length: number, long_length: number, shortBaseTime: number, longBaseTime: number, receiver: Function) {
+	constructor(shortLength: number, longLength: number, shortBaseTime: number, longBaseTime: number, receiver: Function) {
 		super(receiver);
-		this.shortMovingAvg = new MovingAverage(short_length, shortBaseTime, this.shortMvAvgChecker);
-		this.longMovingAvg  = new MovingAverage(long_length, longBaseTime, this.longMvAvgChecker);
+		this.shortMovingAvg = new MovingAverage(shortLength, shortBaseTime, this.shortMvAvgChecker);
+		this.longMovingAvg  = new MovingAverage(longLength, longBaseTime, this.longMvAvgChecker);
 	}
 
 	setLastPrice(price: number): void {
