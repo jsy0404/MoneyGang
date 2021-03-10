@@ -4,5 +4,5 @@ abstract class Algorithm {
 	receiver:	Function;
 
 	constructor(receiver: Function) {this.receiver = receiver; this.lastPrice = 0;}
-	setLastPrice(price: number): void {this.lastPrice = price};
+	setLastPrice(price: number): void {this.lastPrice = price;}
 }

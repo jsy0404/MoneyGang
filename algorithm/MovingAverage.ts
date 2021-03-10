@@ -20,6 +20,10 @@ class MovingAverage extends Algorithm {
 		}, baseTime*1000);
 	}
 
+	setLastPrice(price: number): void {
+		this.lastPrice = price;
+	}
+
 	pushPrice(price: number): void {
 		let normalizedPrice: number = price/this.length;
 
